@@ -11,4 +11,3 @@ public:
     Button(sf::Vector2u pos, sf::Vector2u siz, int _layer, std::function<void()> onClick);
     void Render();
 };
-

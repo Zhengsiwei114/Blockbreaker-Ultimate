@@ -16,4 +16,5 @@ TestScene::TestScene()
 			SceneManager::LoadScene(new TestScene2());
 		}
 	));
+	objects.push_back(new Text({ 400,250 }, "Hello world", sf::Color(0, 0, 0), "Arial.ttf", 24));
 }
