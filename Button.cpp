@@ -2,22 +2,16 @@
 #include "Engine.h"
 #include <iostream>
 
-int Button::id = 0;
-
-Button::Button(sf::Vector2u pos, sf::Vector2u siz)
+Button::Button(sf::Vector2u pos, sf::Vector2u siz, int _layer, std::function<void()> onClick)
 {
-	thisid = ++id;
-	layer = 1;
+	layer = _layer;
 	width = siz.x;
 	height = siz.y;
 	left = pos.x - siz.x / 2;
 	right = left + siz.x;
 	bottom = pos.y - siz.y / 2;
 	top = bottom + siz.y;
-}
-
-void Button::OnClick() {
-	std::cout << "Click id: " << thisid << std::endl;
+	OnClick = onClick;
 }
 
 void Button::Render() {
