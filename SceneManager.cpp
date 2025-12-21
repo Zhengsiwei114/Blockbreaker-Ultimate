@@ -1,19 +1,32 @@
 #include "SceneManager.h"
 #include "Engine.h"
+#include <vector>
+#include <string>
+#include <iostream>
 
 namespace SceneManager
 {
 	void LoadScene(Scene* scene)
 	{
 		auto &objects = Engine::objects;
-		objects.erase(
-			std::remove_if(objects.begin(), objects.end(),
-				[](GameObject* obj) {return !obj->dontDestroyOnLoad; }),
-			objects.end()
-		);
-		for (auto obj : scene->objects) {
-			objects.push_back(obj);
-			obj->Start();
+		std::vector<std::string> keyToErase;
+		for (auto &[key, obj] : objects) {
+			if (!obj->dontDestroyOnLoad) {
+				keyToErase.push_back(key);
+			}
+		}
+		for (auto key : keyToErase) {
+			//std::cout << "Key: \"" << key << "\" erased." << std::endl;
+			auto obj = objects[key];
+			delete obj;
+			obj = nullptr;
+			objects.erase(key);
+		}
+		for (auto &[key, obj] : scene->objects) {
+			if (objects.find(key) == objects.end()) {
+				objects[key] = obj;
+				obj->Start();
+			}
 		}
 	}
 }

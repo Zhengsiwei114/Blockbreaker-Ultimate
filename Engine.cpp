@@ -27,22 +27,28 @@ namespace Engine
 
     void UpdatePhysics()
     {
-        for (auto obj : objects) {
-            obj->UpdatePhysics();
+        for (auto &[key, obj] : objects) {
+            if (obj->GetActive()) {
+                obj->UpdatePhysics();
+            }
         }
     }
 
     void UpdateGameLogic()
     {
-        for (auto obj : objects) {
-            obj->UpdateLogic();
+        for (auto &[key, obj] : objects) {
+            if (obj->GetActive()) {
+                obj->UpdateLogic();
+            }
         }
     }
 
     void Render()
     {
-        for (auto obj : objects) {
-            obj->Render();
+        for (auto &[key, obj] : objects) {
+            if (obj->GetActive()) {
+                obj->Render();
+            }
         }
     }
 
@@ -71,10 +77,10 @@ namespace Engine
                     if (mouse->button == sf::Mouse::Button::Left) {
                         std::vector<UI*> uis;
                         int topLayer = INT32_MIN;
-                        for (auto obj : objects)
+                        for (auto &[key, obj] : objects)
                         {
                             UI* ui = dynamic_cast<UI*>(obj);
-                            if (ui != nullptr && ui->Enclose(mouse->position.x, mouse->position.y))
+                            if (ui && ui->GetActive() && ui->Enclose(mouse->position.x, mouse->position.y))
                             {
                                 uis.push_back(ui);
                                 topLayer = ui->layer > topLayer ? ui->layer : topLayer;
@@ -97,8 +103,35 @@ namespace Engine
         }
     }
 
+    void Destroy(GameObject* obj)
+    {
+        for (auto child : obj->children) {
+            Destroy(child);
+        }
+        objects.erase(obj->name);
+        delete obj;
+    }
+
+    GameObject* CreateObject(std::string name, GameObject* obj, GameObject* father)
+    {
+        obj->name = name;
+        obj->father = father;
+        if (father) {
+            father->children.push_back(obj);
+        }
+        if (objects.find(name) == objects.end()) {
+            objects[name] = obj;
+        }
+        else {
+            std::cerr << "Error: GameObject with name \"" << name << "\" has already been created" << std::endl;
+            delete obj;
+            obj = nullptr;
+        }
+        return obj;
+    }
+
     sf::RenderWindow* window;
 
-    std::vector<GameObject*> objects;
+    std::unordered_map<std::string, GameObject*> objects;
     std::vector<Camera*> cameras;
 }

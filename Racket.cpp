@@ -8,3 +8,11 @@ Racket::Racket(sf::Vector2f pos, sf::Vector2f siz)
 	this->pos = pos;
 	this->size = siz;
 }
+
+void Racket::Render() {
+
+}
+
+void Racket::UpdateLogic() {
+
+}
