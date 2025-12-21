@@ -1,5 +1,8 @@
 #pragma once
 #include <vector>
+#include <unordered_map>
+#include <string>
+#include <iostream>
 #include "SFML/Graphics.hpp"
 
 class GameObject;
@@ -10,14 +13,33 @@ namespace Engine
 	class EngineTime {
 	public:
 	};
+	extern sf::RenderWindow *window;
+
+	extern std::unordered_map<std::string, GameObject*> objects;
+	extern std::vector<Camera*> cameras;
+
 	void Initialize();
 	void Update();
 	void UpdatePhysics();
 	void UpdateGameLogic();
 	void Render();
 	void Run();
-	extern sf::RenderWindow *window;
+    void Destroy(GameObject* obj);
 
-	extern std::vector<GameObject*> objects;
-	extern std::vector<Camera*> cameras;
+	GameObject* CreateObject(std::string name, GameObject* obj, GameObject* father = nullptr);
+
+    template <typename T> T* GetObject(std::string name)
+    {
+        if (objects.find(name) == objects.end()) {
+            std::cerr << "Error: Can not find GameObject with name \"" << "\" " << std::endl;
+            return nullptr;
+        }
+        if (T* ptr = dynamic_cast<T*> (objects[name])) {
+            return ptr;
+        }
+        else {
+            std::cerr << "Error: GameObject \"" << "\" doesn't have target type." << std::endl;
+            return nullptr;
+        }
+    }
 }

@@ -4,30 +4,42 @@
 #include "BoxCollider.h"
 #include "Text.h"
 #include "SceneManager.h"
+#include "Engine.h"
 #include "SFML/System.hpp"
 #include <iostream>
 
 TestScene::TestScene()
 {
 	std::cout << "Loading test scene 1" << std::endl;
-	objects.push_back(new Button(
-		{ 400, 250 },
-		{ 500, 200 },
-		2,
-		[]() {
-			std::cout << "Clicking button 1" << std::endl;
-			SceneManager::LoadScene(new TestScene2());
-		}
-	));
-	objects.push_back(new Button(
-		{ 800, 350 },
-		{ 400, 200 },
-		2,
-		[]() {
-			std::cout << "Clicking button 2" << std::endl;
-			SceneManager::LoadScene(new TestScene2());
-		}
-	));
-	std::cout << objects[0]->collider->CollideWith(objects[1]->collider) << std::endl;
-	objects.push_back(new Text({ 400,250 }, u8"人，过来", sf::Color(255, 127, 63), "Deng.ttf", 32));
+	CreateObject(
+		"Button 1",
+		new Button(
+			{ 400, 250 },
+			{ 500, 200 },
+			2,
+			[]() {
+				std::cout << "Clicking button 1" << std::endl;
+				SceneManager::LoadScene(new TestScene2());
+			}
+		));
+
+	auto txt = CreateObject("Text", new Text({400,250}, u8"人，过来", sf::Color(255, 127, 63), "Deng.ttf", 32));
+	CreateObject(
+		"Button 2",
+		new Button(
+			{ 800, 350 },
+			{ 400, 200 },
+			2,
+			[]() {
+				//std::cout << "Finding \"Button 1\" to click it" << std::endl;
+				//Engine::GetObject<Button>("Button 1")->OnClick();
+				//std::cout << "Destroying GameObject \"Text\"." << std::endl;
+				//Engine::Destroy(Engine::GetObject<GameObject>("Text"));
+				std::cout << "Set GameObject \"Text\" inactive." << std::endl;
+				Engine::GetObject<GameObject>("Text")->SetActive(false);
+			}
+		),
+		txt
+	);
+	std::cout << objects["Button 1"]->collider->CollideWith(objects["Button 1"]->collider) << std::endl;
 }
